@@ -2,7 +2,7 @@ import math
 
 import pygame.image
 
-
+import settings
 
 class Bullet:
     def __init__(self, x, y):
@@ -16,13 +16,18 @@ class Bullet:
             self.dir = (self.dir[0]/length, self.dir[1]/length)
         angle = math.degrees(math.atan2(-self.dir[1], self.dir[0]))
 
-        self.bullet = pygame.image.load("assets/sprite_images/bullet.png").convert_alpha()
+        self.bullet = pygame.Surface((15, 11)).convert_alpha()
+        self.bullet.fill((255, 255, 255))
         self.bullet = pygame.transform.rotate(self.bullet, angle)
-        self.speed = 2
+        #self.bullet_rect = self.bullet.get_rect(center=self.pos)
+        self.speed = 30
 
     def update(self):
         self.pos = (self.pos[0]+self.dir[0]*self.speed,
                     self.pos[1]+self.dir[1]*self.speed)
+
+
+
 
     def draw(self, surf):
         bullet_rect = self.bullet.get_rect(center = self.pos)

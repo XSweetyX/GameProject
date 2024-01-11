@@ -1,4 +1,7 @@
 import pygame,sys
+
+import character_preset
+import settings
 from level import Level
 
 
@@ -28,6 +31,11 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         pygame.quit()
                         sys.exit()
+                    if event.key == pygame.K_e:
+                        settings.picked = True
+                        if character_preset.get_seed_count() != 0:
+                            settings.planted=True
+
 
             self.screen.fill("grey")
 
