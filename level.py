@@ -188,9 +188,11 @@ class YSortCameraGroup(pygame.sprite.Group):
             for en in settings.enemies:
                 #находим глобальные(относительно холста) координаты пули
                 pos = (bullet.pos[0]-hands_offset_pos.x+settings.player_current_x, bullet.pos[1]-hands_offset_pos.y+settings.player_current_y)
-               # print("pos",bullet.pos[0],bullet.pos[1])
-                #print("hands_offset",hands_offset_pos.x,hands_offset_pos.y)
-               # print("pc.x pc.y",settings.player_current_x,settings.player_current_y)
+                """
+                OOOOOOOOOOOOOOOOOOOOOOOOOOOO
+                !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                ASDASDAASDAAASDAAAASADASDASA
+                """
                 b_rect = bullet.bullet.get_rect(center=pos)
                 if en.rect.colliderect(b_rect):
                     bullet.bullet.fill((255, 0, 0))
