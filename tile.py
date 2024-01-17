@@ -129,6 +129,8 @@ class PlantingTile(pygame.sprite.Sprite):
                         settings.planting_tiles[i][4] = "without.png"
 
                         character_preset.p_money +=10
+                        character_preset.p_scores+=1000
+
                         settings.picked = False
 
                         print(character_preset.p_money)

@@ -39,7 +39,7 @@ class Game:
         font = pygame.font.Font(None, 36)
         scores = 1223425
         self.level_runnable = False
-        self.menu_text = font.render(f'Очки: {scores}', True, (255, 255, 255))  # белый цвет
+        self.menu_text = font.render(f'Очки: {character_preset.p_scores}', True, (255, 255, 255))  # белый цвет
         self.menu_text_rect = self.menu_text.get_rect(center=(WIDTH // 2, 100))
 
         # Кнопка "Играть" (синий текст на красной кнопке)
@@ -76,7 +76,8 @@ class Game:
                         if character_preset.get_seed_count() != 0:
                             settings.planted=True
                     if event.key == pygame.K_1:
-                        print("OK")
+                        character_preset.write_scores()
+                        print("The data has been written")
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # запуск нашего уровня
                     if self.play_button.collidepoint(event.pos):
