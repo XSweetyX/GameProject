@@ -1,4 +1,6 @@
 import pygame
+
+import character_preset
 from enemy import Enemy
 
 import settings
@@ -52,11 +54,11 @@ class Level:
                             self.p_tile_objects.append(PlantingTile((x, y), [self.visibles], "visable", p_image))
                             if i < len(settings.planting_tiles) - 1:
                                 i += 1
-                        if style =="enemies":
-
-                            settings.enemies.append(Enemy((x, y), [self.visible_sprites], obstacle_sprites=self.obstacles_sprites))
+                        if style == "enemies":
+                            settings.enemies.append(
+                                Enemy((x, y), [self.visible_sprites], obstacle_sprites=self.obstacles_sprites))
                             settings.enemies[en_count]
-                            en_count+=1
+                            en_count += 1
         settings.p_tile_obljects = self.p_tile_objects
 
         # начальные координаты игрока
@@ -70,7 +72,6 @@ class Level:
         self.visible_sprites.custom_draw(self.player)
         self.visible_sprites.update()
         self.visibles.update()
-
 
 
 class YSortCameraGroup(pygame.sprite.Group):
@@ -142,7 +143,7 @@ class YSortCameraGroup(pygame.sprite.Group):
         # поиграйся с позициями x y чтобы убрать резкий переход
         self.offset.x += mouse_offset_vector.x * self.mouse_camera_speed
         self.offset.y += mouse_offset_vector.y * self.mouse_camera_speed
-        settings.sprite_offset =self.offset
+        settings.sprite_offset = self.offset
         # отрисовка карты
         floor_offset_pos = self.floor_rect.topleft - self.offset
         self.display_surface.blit(self.floor_surface, floor_offset_pos)
@@ -169,10 +170,6 @@ class YSortCameraGroup(pygame.sprite.Group):
         offset_pos = self.sprites()[0].rect.topleft - self.offset
         self.display_surface.blit(self.sprites()[0].image, offset_pos)
 
-
-
-
-
         # отрисовка пуль
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
@@ -186,13 +183,9 @@ class YSortCameraGroup(pygame.sprite.Group):
             died_enemy = ""
             died = False
             for en in settings.enemies:
-                #находим глобальные(относительно холста) координаты пули
-                pos = (bullet.pos[0]-hands_offset_pos.x+settings.player_current_x, bullet.pos[1]-hands_offset_pos.y+settings.player_current_y)
-                """
-                OOOOOOOOOOOOOOOOOOOOOOOOOOOO
-                !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                ASDASDAASDAAASDAAAASADASDASA
-                """
+                # находим глобальные(относительно холста) координаты пули
+                pos = (bullet.pos[0] - hands_offset_pos.x + settings.player_current_x,
+                       bullet.pos[1] - hands_offset_pos.y + settings.player_current_y)
                 b_rect = bullet.bullet.get_rect(center=pos)
                 if en.rect.colliderect(b_rect):
                     bullet.bullet.fill((255, 0, 0))
@@ -203,7 +196,7 @@ class YSortCameraGroup(pygame.sprite.Group):
                         img = pygame.image.load(f"assets/sprite_images/pz0.png").convert_alpha()
                         en.image = img
                         rect = img.get_rect(center=en.pos_p)
-                        self.display_surface.blit(img,rect)
+                        self.display_surface.blit(img, rect)
                         died = True
             if died:
                 settings.enemies.remove(died_enemy)
@@ -212,10 +205,17 @@ class YSortCameraGroup(pygame.sprite.Group):
         for bullet in self.bullets:
             bullet.draw(self.display_surface)
 
-        for enemy in settings.enemies :
+        for enemy in settings.enemies:
             enemy.draw(self.display_surface)
 
+        money = character_preset.p_money
+        money_color = (255, 228, 0)
 
+        lives = character_preset.p_hp
+        lives_color = (0, 255, 0)
+        self.draw_window(self.display_surface, f'Деньги: {money}', money_color, 50)
+        self.draw_window(self.display_surface, f'Жизни: {lives}', lives_color, 300)
+        # self.draw_window(self.display_surface, f'Еда: {food}', food_color, 550)
 
         self.cursor = Cursor()
         pygame.mouse.set_visible(False)
@@ -223,3 +223,15 @@ class YSortCameraGroup(pygame.sprite.Group):
 
         settings.player_current_y = player.rect.centerx
         settings.player_current_y = player.rect.centery
+
+    def draw_window(self, display, value, color, x_position):
+        # Отображение значения и рамки для окна
+
+        font = pygame.font.Font(None, 30)
+        text_surface = font.render(str(value), True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(x_position + 75, 70))
+        pygame.draw.rect(display, color, (x_position, 50, 150, 40), 0)
+        pygame.draw.rect(display, (0, 0, 0), (x_position, 50, 150, 40), 5)
+        pygame.draw.rect(display, (0, 0, 0), (x_position + 150, 50, 5, 40))
+
+        display.blit(text_surface, text_rect)
