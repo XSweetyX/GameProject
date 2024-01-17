@@ -212,6 +212,9 @@ class YSortCameraGroup(pygame.sprite.Group):
 
         for enemy in settings.enemies :
             enemy.draw(self.display_surface)
+
+
+
         self.cursor = Cursor()
         pygame.mouse.set_visible(False)
         self.display_surface.blit(self.cursor.image, self.cursor.cursor_img_rect)
