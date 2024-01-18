@@ -1,7 +1,10 @@
 import math
+import time
 
 import pygame
 
+import character_preset
+import enemy
 import settings
 from character_preset import *
 from settings import *
@@ -28,30 +31,28 @@ class Player(pygame.sprite.Sprite):
         self.animation_count = 1
         self.status = "right"
 
-        #характеристики персонажа(присовение значений объекту)
+        # характеристики персонажа(присовение значений объекту)
         self.hp = p_hp
         self.value_of_water = p_value_of_water
         self.speed = p_speed
         self.money = p_money
         self.seeds = p_seeds
 
-
-
     def animate(self):
         self.animations = {"right": f"assets/animations/MC_R/r_{int(self.animation_count)}.png",
                            "left": f"assets/animations/MC_L/l_{int(self.animation_count)}.png"}
         self.animation_count += self.animation_speed
-        mx,my = pygame.mouse.get_pos()
-        if 0<mx<480 :
+        mx, my = pygame.mouse.get_pos()
+        if 0 < mx < 480:
             self.status = "left"
-        else :
+        else:
             self.status = "right"
-        if self.animation_count >=5:
-            self.animation_count =1
+        if self.animation_count >= 5:
+            self.animation_count = 1
         self.image = pygame.image.load(self.animations[self.status]).convert_alpha()
 
-
         self.rect = self.image.get_rect(center=self.hitbox.center)
+
     def controllers(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -78,13 +79,14 @@ class Player(pygame.sprite.Sprite):
         else:
 
             self.direction.x = 0
-        if not  keys[pygame.K_a] and  not keys[pygame.K_d]and not  keys[pygame.K_w] and not  keys[pygame.K_s]:
-
+        if not keys[pygame.K_a] and not keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
             self.animation_count = 1
             self.animation_speed = 0
 
-        if (keys[pygame.K_d] and keys[pygame.K_w]) or(keys[pygame.K_d] and keys[pygame.K_s])  or(keys[pygame.K_a] and keys[pygame.K_s])or(keys[pygame.K_a] and keys[pygame.K_w]):
+        if (keys[pygame.K_d] and keys[pygame.K_w]) or (keys[pygame.K_d] and keys[pygame.K_s]) or (
+                keys[pygame.K_a] and keys[pygame.K_s]) or (keys[pygame.K_a] and keys[pygame.K_w]):
             self.animation_speed = 0.075
+
     def move(self):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
@@ -116,11 +118,21 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.hitbox.bottom
 
+    def get_damage(self,enemy):
+
+
+        if (pygame.time.get_ticks() - 1000)%1000 >750:
+
+            self.hp -= enemy.damage
+            return
+        if self.hp<=0:
+            settings.win ="lost"
+
     def update(self):
 
         self.animate()
         self.controllers()
         self.move()
 
-        settings.player_current_x=self.hitbox.x
-        settings.player_current_y=self.hitbox.y
+        settings.player_current_x = self.hitbox.x
+        settings.player_current_y = self.hitbox.y

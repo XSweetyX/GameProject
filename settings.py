@@ -7,8 +7,10 @@ player_coordinates = (1400, 4300)
 hands_coordinates = player_coordinates
 player_current_x = 1400
 player_current_y = 4300
-planted=False
-picked=False
+planted = False
+picked = False
+win = "none"
+pressed= False
 
 planting_tiles = [[1, (2048, 2944), "plant_type", 0, "without.png", False],
                   [2, (2176, 2944), "plant_type", 0, "without.png", False],
@@ -27,15 +29,20 @@ planting_tiles = [[1, (2048, 2944), "plant_type", 0, "without.png", False],
                   [15, (2304, 3328), "plant_type", 0, "without.png", False],
                   [16, (2432, 3328), "plant_type", 0, "without.png", False],
                   ]
+
 # разбитие карты на учаски через значение клеток в массиве
 planting_tiles_coords = []
-p_tile_obljects =[]
-#пустые списки не трогать!!!
-#они заполняются во время работы программы
+p_tile_obljects = []
+# пустые списки не трогать!!!
+# они заполняются во время работы программы
 
-#enemies
-monster_data={"jack":{"health":100,"damage":1,"attack_type":"slash","attack_sound:":"...","speed":3,"resistance":3,"attack_radius":80,"notice_radius":80}}
-enemies=[]
-enemies_pos=[[5888, 1792], [5632, 1920], [4608, 2560], [4864, 2560], [6528, 2560], [6784, 2560], [4736, 2816], [6528, 2816], [6784, 2816], [4352, 3328], [4608, 3456], [6400, 3968], [6656, 3968], [4864, 4096], [4608, 4224], [4864, 4352], [5632, 4352], [6016, 4480]]
+# enemies
+monster_data = {
+    "jack": {"health": 100, "damage": 5, "attack_type": "slash", "attack_sound:": "...", "speed": 3, "resistance": 3,
+             "attack_radius": 80, "notice_radius": 460}}
+enemies = []
+enemies_pos = [[5888, 1792], [5632, 1920], [4608, 2560], [4864, 2560], [6528, 2560], [6784, 2560], [4736, 2816],
+               [6528, 2816], [6784, 2816], [4352, 3328], [4608, 3456], [6400, 3968], [6656, 3968], [4864, 4096],
+               [4608, 4224], [4864, 4352], [5632, 4352], [6016, 4480]]
 
-sprite_offset=0
+sprite_offset = 0

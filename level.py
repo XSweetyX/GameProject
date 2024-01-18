@@ -71,6 +71,7 @@ class Level:
         # обновление экрана и отрисовка спрайтов
         self.visible_sprites.custom_draw(self.player)
         self.visible_sprites.update()
+        self.visible_sprites.enemy_update(self.player)
         self.visibles.update()
 
 
@@ -87,7 +88,6 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.offset = pygame.math.Vector2()
         # Делаем отрисовку карты заранее
         self.floor_surface = pygame.image.load("assets/tile_images/Atomic Harvest Map Repaired.png").convert()
-        # self.floor_surface = pygame.transform.scale(self.floor_surface, (self.floor_surface.get_width()*scale_factor, self.floor_surface.get_height()*scale_factor))
         self.floor_rect = self.floor_surface.get_rect(topleft=(0, 0))
 
     def redraw_planting_tile(self):
@@ -171,9 +171,11 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.display_surface.blit(self.sprites()[0].image, offset_pos)
 
         # отрисовка пуль
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
+        if settings.pressed:
             self.bullets.append(Bullet(*hands_offset_pos))
+            settings.pressed=False
+
+        self.died_idx=0
 
         for bullet in self.bullets[:]:
             bullet.update()
@@ -189,33 +191,45 @@ class YSortCameraGroup(pygame.sprite.Group):
                 b_rect = bullet.bullet.get_rect(center=pos)
                 if en.rect.colliderect(b_rect):
                     bullet.bullet.fill((255, 0, 0))
-                    print(pos)
                     if bullet in self.bullets:
                         self.bullets.remove(bullet)
-                        died_enemy = en
-                        img = pygame.image.load(f"assets/sprite_images/pz0.png").convert_alpha()
-                        en.image = img
-                        rect = img.get_rect(center=en.pos_p)
-                        self.display_surface.blit(img, rect)
-                        died = True
+                        en.get_damage()
+                        if en.hp<=0:
+                            character_preset.p_seeds["potato"]+=3
+                            died_enemy = en
+                            img = pygame.image.load(f"assets/sprite_images/without.png").convert_alpha()
+                            en.image = img
+                            self.died_idx =settings.enemies.index(died_enemy)
+                            rect = img.get_rect(center=en.pos_p)
+                            self.display_surface.blit(img, rect)
+                            died = True
+
             if died:
+
+                settings.enemies[self.died_idx].damage = 0
+                character_preset.p_scores+=1000
+
                 settings.enemies.remove(died_enemy)
-                print(settings.enemies)
+
+
+
 
         for bullet in self.bullets:
-            bullet.draw(self.display_surface)
+                bullet.draw(self.display_surface)
 
         for enemy in settings.enemies:
             enemy.draw(self.display_surface)
 
-        money = character_preset.p_money
-        money_color = (255, 228, 0)
 
-        lives = character_preset.p_hp
+        money_color = (255, 228, 0)
+        scores = character_preset.p_scores
+        scores_color = (212, 125, 0)
+        lives = player.hp
         lives_color = (0, 255, 0)
-        self.draw_window(self.display_surface, f'Деньги: {money}', money_color, 50)
+        self.seeds = character_preset.p_seeds["potato"]
+        self.draw_window(self.display_surface, f'Семена: {self.seeds}', money_color, 50)
         self.draw_window(self.display_surface, f'Жизни: {lives}', lives_color, 300)
-        # self.draw_window(self.display_surface, f'Еда: {food}', food_color, 550)
+        self.draw_window(self.display_surface, f'Очки: {scores}', scores_color, 550)
 
         self.cursor = Cursor()
         pygame.mouse.set_visible(False)
@@ -233,5 +247,12 @@ class YSortCameraGroup(pygame.sprite.Group):
         pygame.draw.rect(display, color, (x_position, 50, 150, 40), 0)
         pygame.draw.rect(display, (0, 0, 0), (x_position, 50, 150, 40), 5)
         pygame.draw.rect(display, (0, 0, 0), (x_position + 150, 50, 5, 40))
+        pygame.draw.rect(display, color, (x_position, 50, 150, 40), 0)
 
         display.blit(text_surface, text_rect)
+
+    def enemy_update(self,player):
+        enemy_sprites = [sprite for sprite in self.sprites() if  hasattr(sprite,"sprite_type") and sprite.sprite_type=="enemy"]
+        for enemy in enemy_sprites:
+            enemy.enemy_update(player)
+

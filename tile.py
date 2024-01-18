@@ -26,24 +26,23 @@ class PlantingTile(pygame.sprite.Sprite):
     def __init__(self, pos, groups, sprite_type, img):
         super().__init__(groups)
         self.sprite_type = sprite_type  # враг,обект и тд
-        self.image =img
+        self.image = img
         # выделяем прямоугольную область у картинки, чтобы позиционировать её на экране
         self.rect = self.image.get_rect(topleft=pos)
         # возможность сажать растения
         self.plantable = False
-        self.planted=False
-        self.decreased=False
-        self.planting_stages = {"seed": [], "sprout": [], "grown_up": [], "without": [],}
+        self.planted = False
+        self.decreased = False
+        self.planting_stages = {"seed": [], "sprout": [], "grown_up": [], "without": [], }
         self.plant_types = {"potato": 15}
         self.current_stage = "without"
         # свойтв полей растения
 
-
-
     def find_tile_by_pos(self, pos):
         for i in settings.planting_tiles:
             if i[1][0] == pos[0] and i[1][1] == pos[1]:
-                return i[0]-1
+                return i[0] - 1
+
     def run_once(f):
         def wrapper(*args, **kwargs):
             if not wrapper.has_run:
@@ -52,39 +51,33 @@ class PlantingTile(pygame.sprite.Sprite):
 
         wrapper.has_run = False
         return wrapper
-    def check_mouse_on_plant(self):
 
+    def check_mouse_on_plant(self):
 
         if planting_tiles_coords[0][0] <= settings.player_current_x <= planting_tiles_coords[-1][0] + 128 \
                 and planting_tiles_coords[0][1] <= settings.player_current_y <= planting_tiles_coords[-1][1] + 128:
-            self.plantable =True
+            self.plantable = True
 
         else:
-            self.plantable=False
+            self.plantable = False
         self.last_idx = 17
         if not self.plantable:
-            if self.last_idx!=17:
+            if self.last_idx != 17:
                 settings.planting_tiles[self.last_idx][4] = "without.png"
         if self.plantable:
             planting_tile_coords = self.find_planting_tile(settings.player_current_x, settings.player_current_y)
-            t_idx= self.find_tile_by_pos(planting_tile_coords)
+            t_idx = self.find_tile_by_pos(planting_tile_coords)
 
             if t_idx:
                 for i in range(len(settings.planting_tiles)):
-                    if i!=t_idx and not settings.planting_tiles[i][5]:
+                    if i != t_idx and not settings.planting_tiles[i][5]:
                         settings.planting_tiles[i][4] = "without.png"
                 if not settings.planting_tiles[t_idx][5]:
                     settings.planting_tiles[t_idx][4] = "plantable.png"
                     if settings.planted:
                         self.plant()
                         self.decrease_seed()
-                        settings.planted=False
-
-
-
-
-
-
+                        settings.planted = False
 
     def find_planting_tile(self, x, y):
         res = None
@@ -107,7 +100,6 @@ class PlantingTile(pygame.sprite.Sprite):
             settings.planting_tiles[planting_tile_id][4] = "seed.png"
             settings.planting_tiles[planting_tile_id][5] = True
 
-
     def decrease_seed(self):
 
         character_preset.p_seeds["potato"] = character_preset.p_seeds["potato"] - 1
@@ -115,21 +107,21 @@ class PlantingTile(pygame.sprite.Sprite):
 
     def grow(self):
 
-        for i in range(1,len(settings.planting_tiles)):
-            if settings.planting_tiles[i][3] !=0:
-                if time.time()-settings.planting_tiles[i][3]>3:
+        for i in range(1, len(settings.planting_tiles)):
+            if settings.planting_tiles[i][3] != 0:
+                if time.time() - settings.planting_tiles[i][3] > 3:
                     settings.planting_tiles[i][4] = "sprout.png"
                 if time.time() - settings.planting_tiles[i][3] > 6:
                     settings.planting_tiles[i][4] = "grown_up.png"
                 if time.time() - settings.planting_tiles[i][3] > 9:
                     settings.planting_tiles[i][4] = "pickable.png"
                     if settings.picked:
-                        settings.planting_tiles[i][3]=0
-                        settings.planting_tiles[i][5] =False
+                        settings.planting_tiles[i][3] = 0
+                        settings.planting_tiles[i][5] = False
                         settings.planting_tiles[i][4] = "without.png"
 
-                        character_preset.p_money +=10
-                        character_preset.p_scores+=1000
+                        character_preset.p_money += 10
+                        character_preset.p_scores += 1000
 
                         settings.picked = False
 
